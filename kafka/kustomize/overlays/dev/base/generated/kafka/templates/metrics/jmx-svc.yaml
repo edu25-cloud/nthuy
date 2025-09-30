@@ -1,0 +1,30 @@
+---
+# Source: kafka/templates/metrics/jmx-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: logging-kafka-jmx-metrics
+  namespace: "netwok-logging"
+  labels:
+    app.kubernetes.io/instance: logging
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 3.8.0
+    helm.sh/chart: kafka-30.0.4
+    app.kubernetes.io/component: metrics
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "5556"
+    prometheus.io/scrape: "true"
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: http-metrics
+      port: 5556
+      protocol: TCP
+      targetPort: metrics
+  selector:
+    app.kubernetes.io/instance: logging
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/part-of: kafka

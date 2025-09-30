@@ -1,0 +1,55 @@
+---
+# Source: kafka/templates/controller-eligible/svc-headless.yaml
+apiVersion: v1
+kind: Service
+metadata:
+<<<<<<< HEAD
+  name: logging-kafka-controller-headless
+  namespace: "netwok-logging"
+  labels:
+    app.kubernetes.io/instance: logging
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 3.8.0
+    helm.sh/chart: kafka-30.0.4
+=======
+  name: kafka-controller-headless
+  namespace: "kafka"
+  labels:
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.0
+>>>>>>> 7a89ac21ee96cffaa294dbdb1fa9c3742ce92446
+    app.kubernetes.io/component: controller-eligible
+    app.kubernetes.io/part-of: kafka
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+<<<<<<< HEAD
+=======
+    - name: tcp-interbroker
+      port: 9094
+      protocol: TCP
+      targetPort: interbroker
+    - name: tcp-client
+      port: 9092
+      protocol: TCP
+      targetPort: client
+>>>>>>> 7a89ac21ee96cffaa294dbdb1fa9c3742ce92446
+    - name: tcp-controller
+      protocol: TCP
+      port: 9093
+      targetPort: controller
+  selector:
+<<<<<<< HEAD
+    app.kubernetes.io/instance: logging
+=======
+    app.kubernetes.io/instance: kafka
+>>>>>>> 7a89ac21ee96cffaa294dbdb1fa9c3742ce92446
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/component: controller-eligible
+    app.kubernetes.io/part-of: kafka

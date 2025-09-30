@@ -1,0 +1,26 @@
+---
+# Source: gitea/templates/gitea/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gitea
+  namespace: gitea
+  labels:
+    helm.sh/chart: gitea-11.0.1
+    app: gitea
+    app.kubernetes.io/name: gitea
+    app.kubernetes.io/instance: gitea
+    app.kubernetes.io/version: "1.23.6"
+    version: "1.23.6"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: "git.example.com"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: gitea-http
+              servicePort: 3000

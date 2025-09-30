@@ -1,0 +1,68 @@
+---
+# Source: kafka/templates/controller-eligible/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+<<<<<<< HEAD
+  name: logging-kafka-controller-configuration
+  namespace: "netwok-logging"
+  labels:
+    app.kubernetes.io/instance: logging
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 3.8.0
+    helm.sh/chart: kafka-30.0.4
+=======
+  name: kafka-controller-configuration
+  namespace: "kafka"
+  labels:
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.0
+>>>>>>> 7a89ac21ee96cffaa294dbdb1fa9c3742ce92446
+    app.kubernetes.io/component: controller-eligible
+    app.kubernetes.io/part-of: kafka
+data:
+  server.properties: |-
+<<<<<<< HEAD
+    # Listeners configuration
+    listeners=CONTROLLER://:9093
+    listener.security.protocol.map=CLIENT:SASL_PLAINTEXT,INTERNAL:SASL_PLAINTEXT,CONTROLLER:SASL_PLAINTEXT
+    # KRaft process roles
+    process.roles=controller
+    #node.id=
+    controller.listener.names=CONTROLLER
+    controller.quorum.voters=0@logging-kafka-controller-0.logging-kafka-controller-headless.netwok-logging.svc.cluster.local:9093,1@logging-kafka-controller-1.logging-kafka-controller-headless.netwok-logging.svc.cluster.local:9093
+    # Kraft Controller listener SASL settings
+    sasl.mechanism.controller.protocol=PLAIN
+    listener.name.controller.sasl.enabled.mechanisms=PLAIN
+    listener.name.controller.plain.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="controller_user" password="controller-password-placeholder" user_controller_user="controller-password-placeholder";
+    # Kafka data logs directory
+    log.dir=/bitnami/kafka/data
+    # Kafka application logs directory
+    logs.dir=/opt/bitnami/kafka/logs
+
+    # Common Kafka Configuration
+    
+    sasl.enabled.mechanisms=PLAIN,SCRAM-SHA-256,SCRAM-SHA-512
+    # Interbroker configuration
+    inter.broker.listener.name=INTERNAL
+    sasl.mechanism.inter.broker.protocol=PLAIN
+    # Listeners SASL JAAS configuration
+    listener.name.client.plain.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required user_user1="password-placeholder-0";
+    listener.name.client.scram-sha-256.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required;
+    listener.name.client.scram-sha-512.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required;
+    listener.name.internal.plain.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="inter_broker_user" password="interbroker-password-placeholder" user_inter_broker_user="interbroker-password-placeholder" user_user1="password-placeholder-0";
+    listener.name.internal.scram-sha-256.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="inter_broker_user" password="interbroker-password-placeholder";
+    listener.name.internal.scram-sha-512.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="inter_broker_user" password="interbroker-password-placeholder";
+    # End of SASL JAAS configuration
+
+    # Custom Kafka Configuration
+    offsets.topic.replication.factor=2
+=======
+    offsets.topic.replication.factor=2
+    transaction.state.log.min.isr=1
+>>>>>>> 7a89ac21ee96cffaa294dbdb1fa9c3742ce92446
+    transaction.state.log.replication.factor=2

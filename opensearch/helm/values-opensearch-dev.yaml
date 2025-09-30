@@ -1,0 +1,38 @@
+# imagePullSecrets:
+#   - name: "harbor"  # name secret harbor on k8s
+
+replicas: 2
+
+image:
+  repository: "opensearchproject/opensearch" #harbor.trhuy.com/demo/opensearch
+  tag: "2.16.0"
+  pullPolicy: "IfNotPresent"
+
+extraEnvs:
+  - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+    value: Opensearch#12
+
+labels:
+  app: network-logging-opensearch
+
+opensearchJavaOpts: "-Xmx512m -Xms512m"
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+
+
+persistence:
+  enabled: true
+  image: "busybox"
+  imageTag: "1.37"
+  labels:
+    enabled: false
+  storageClass: "nfs-delete"
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+
+nodeSelector:
+  network-logging: enabled

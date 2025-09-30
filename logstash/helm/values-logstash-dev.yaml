@@ -1,0 +1,65 @@
+# imagePullSecrets:
+#   - name: "harbor"
+
+image: opensearchproject/logstash-oss-with-opensearch-output-plugin # harbor.trhuy.com/demo/logstash
+imageTag: 8.9.0
+imagePullPolicy: "IfNotPresent"
+
+logstashConfig:
+  logstash.yml: |
+    http.host: 0.0.0.0
+    http.port: 9600
+    pipeline.workers: 1
+    pipeline.batch.size: 50
+    pipeline.batch.delay: 10
+
+  pipelines.yaml: |
+    - pipeline.id: sglog-pipeline-id
+      path.config: "/usr/share/logstash/pipeline/sglog-pipeline.conf"
+
+logstashPipeline:
+  lsglog-pipeline.conf: |
+    input {
+      beats {
+        port => 5044
+      }
+    }
+
+    filter {}
+
+    output {
+      opensearch {
+        hosts => "https://opensearch-cluster-master:9200"
+        user => "admin"
+        password => "Opensearch#321"
+        index => "sglog" #-%{nodename}
+        action => "create"
+        ssl_certificate_verification => false
+      }
+    }
+
+extraContainers:
+  - name: logstash-exporter
+    image: "logstash-exporter:v1.8.3"
+    imagePullPolicy: IfNotPresent
+    env:
+      - name: LOGSTASH_URL
+        value: "http://localhost:9600"
+      - name: PORT
+        value: "9198"
+      - name: HTTP_TIMEOUT
+        value: "60s"
+      - name: HTTP_INSECURE
+        value: "false"
+    ports:
+      - name: http
+        containerPort: 9198
+
+logstashJavaOpts: "-Xmx256m -Xms256m"
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000

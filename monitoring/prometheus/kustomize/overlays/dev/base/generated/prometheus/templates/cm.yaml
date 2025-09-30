@@ -1,0 +1,81 @@
+---
+# Source: prometheus/templates/cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/version: v2.53.0
+    helm.sh/chart: prometheus-25.23.0
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prometheus
+  name: prometheus-server
+  namespace: monitoring
+data:
+  allow-snippet-annotations: "false"
+  alerting_rules.yml: |
+    groups:
+    - name: containerRestart
+      rules:
+      - alert: containerRestart
+        annotations:
+          description: Container in {{$labels.pod}} has been restarted
+        expr: increase(kube_pod_container_status_restarts_total[5m]) >= 1
+        for: 0m
+        labels:
+          severity: critical
+    - name: opensearchClusterStatus
+      rules:
+      - alert: opensearchClusterStatus
+        expr: sum(opensearch_cluster_status) > 0
+        for: 1m
+        labels:
+          severity: critical
+    - name: logstashPipelineDown
+      rules:
+      - alert: logstashPipelineDown
+        expr: max(logstash_stats_pipeline_up) != 1
+        for: 1m
+        labels:
+          severity: critical
+  alerts: |
+    {}
+  prometheus.yml: |
+    global:
+      evaluation_interval: 1m
+      scrape_interval: 1m
+      scrape_timeout: 1m
+    rule_files:
+    - /etc/config/recording_rules.yml
+    - /etc/config/alerting_rules.yml
+    - /etc/config/rules
+    - /etc/config/alerts
+    scrape_configs:
+    - job_name: prometheus
+      static_configs:
+      - targets:
+        - localhost:9090
+    - job_name: 'nw-opensearch-metric-job'
+      static_configs:
+        - targets:
+            - opensearch-cluster-master-0.opensearch-cluster-master-headless.network-logging.svc.cluster.local:9200
+      scheme: https
+      basic_auth:
+        username: admin
+        password: Opensearch#123
+      tls_config:
+        insecure_skip_verify: true
+      metrics_path: /_prometheus/metrics
+      scrape_interval: 30s
+    
+    alerting:
+      alertmanagers:
+        - static_configs:
+          - targets:
+            - prometheus-alertmanager:9093
+  recording_rules.yml: |
+    {}
+  rules: |
+    {}

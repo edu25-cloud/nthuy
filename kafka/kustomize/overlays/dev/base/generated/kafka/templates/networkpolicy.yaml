@@ -1,0 +1,30 @@
+---
+# Source: kafka/templates/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: logging-kafka
+  namespace: "netwok-logging"
+  labels:
+    app.kubernetes.io/instance: logging
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 3.8.0
+    helm.sh/chart: kafka-30.0.4
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: logging
+      app.kubernetes.io/name: kafka
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    # Allow client connections
+    - ports:
+        - port: 9092
+        - port: 9094
+        - port: 9093
+        - port: 5556

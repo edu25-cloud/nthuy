@@ -1,0 +1,26 @@
+---
+# Source: akhq/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: akhq
+  labels:
+    app.kubernetes.io/name: akhq
+    helm.sh/chart: akhq-0.25.1
+    app.kubernetes.io/instance: akhq
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 28081
+      targetPort: management
+      protocol: TCP
+      name: management
+  selector:
+    app.kubernetes.io/name: akhq
+    app.kubernetes.io/instance: akhq

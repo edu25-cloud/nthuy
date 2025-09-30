@@ -1,0 +1,32 @@
+---
+# Source: prometheus/charts/alertmanager/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alertmanager
+  labels:
+    helm.sh/chart: alertmanager-1.11.0
+    app.kubernetes.io/name: alertmanager
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/version: "v0.27.0"
+    app.kubernetes.io/managed-by: Helm
+  namespace: monitoring
+data:
+  alertmanager.yml: |
+    global:
+      smtp_from: alertmanager@cluster.local
+      smtp_smarthost: localhost:25
+    receivers:
+    - email_configs:
+      - require_tls: false
+        to: root@mail.cluster.local
+      name: general-email
+    route:
+      group_by:
+      - alertname
+      group_interval: 2m
+      group_wait: 10s
+      receiver: general-email
+      repeat_interval: 5m
+    templates:
+    - /etc/alertmanager/*.tmpl

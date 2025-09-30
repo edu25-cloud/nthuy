@@ -1,0 +1,33 @@
+---
+# Source: prometheus/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/version: v2.53.0
+    helm.sh/chart: prometheus-25.23.0
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: prometheus
+  name: prometheus-server
+  namespace: monitoring
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: myprometheus.example.com
+      http:
+        paths:
+
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: prometheus-server
+                port:
+                  number: 80
+  tls:
+    - hosts:
+      - myprometheus.example.com
+      secretName: cert-secret

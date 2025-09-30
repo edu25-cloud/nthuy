@@ -1,0 +1,33 @@
+# imagePullSecrets:
+#   - name: "harbor"  # name secret harbor on k8s
+
+replicaCount: 1
+
+image:
+  repository: "opensearchproject/opensearch-dashboards" #harbor.trhuy.com/demo/opensearch
+  tag: "2.16.0"
+  pullPolicy: "IfNotPresent"
+
+ingress:
+  enabled: false
+  ingressClassName: nginx
+  annotations: {}
+  hosts:
+    - host: opensearch-dashboards.example.com
+      paths:
+        - path: /
+          pathType: "Prefix"
+          backend:
+            serviceName: ""
+            servicePort: ""
+  tls: []
+  #  - secretName: cert-secret
+  #    hosts:
+  #      - opensearch-dashboards.example.com
+resources:
+  requests:
+    cpu: "100m"
+    memory: "512M"
+
+nodeSelector: {}
+  # network-logging: enabled

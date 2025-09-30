@@ -1,0 +1,106 @@
+
+replicas: 1
+
+image: opensearchproject/logstash-oss-with-opensearch-output-plugin #"docker.elastic.co/logstash/logstash"
+imageTag: "8.9.0"
+imagePullPolicy: "IfNotPresent"
+imagePullSecrets: []
+
+logstashConfig:
+  logstash.yml: |
+    http.host: 0.0.0.0
+    http.port: 9600
+    pipeline.workers: 1
+    pipeline.batch.size: 50
+    pipeline.batch.delay: 10
+  pipelines.yaml: |
+    - pipeline.id: sglog-pipeline-id
+      path.config: "/usr/share/logstash/pipeline/sglog-pipeline.conf"
+    # - pipeline.id: sglog-pipeline-id
+    #   path.config: "/usr/share/logstash/pipeline/fwlog-pipeline.conf"
+logstashPipeline:
+  lglog-pipeline.conf: |
+    input {
+      kafka {
+        topics => ["sglog"]
+        group_id => "logstash_group"
+        bootstrap_servers: "logging-kafka:9092"
+        sasl_jass_config: "org.apache.kafka.common.security.plain.PlainLoginModule required username='admin' password='kaf123';"
+        security_protocol: "SASL_PLAINTEXT"
+        sasl.mechanism: "PLAIN"
+        client_id => "logstash"
+        codec => "json"
+        consumer_threads => 1
+        auto_offset_reset => "latest"
+
+    filter {}
+
+    output { 
+      opensearch {
+        hosts  => "https://opensearch-cluster-master:9200"
+        user   => "admin"
+        password  => "password_opensearch"
+        index  => "sglog-%{+YYYY.MM.dd}"
+        action  => "create"
+        ssl_certificate_verification  => false
+        }
+    }
+
+extraContainers: []
+  # - name: logstash-exporter
+  #   image: "logstash-exporter:v1.8.3" # check version on helmchart
+  #   imagePullPolicy: IfNotPresent
+  #   env:
+  #   - name: LOGTASH_URL
+  #     value: "http://localhost:9600"
+  #   - name: PORT
+  #     value: "9198"
+  #   - name: HTTP_TIMEOUT
+  #     value: "60s"
+  #   - name: HTTP_INSECURE
+  #     value: "false"
+  #   ports:
+  #   - name: http
+  #     containerPort: 9198
+
+logstashJavaOpts: "-Xmx256m -Xms256m"
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "512Mi"
+
+antiAffinity: "soft"
+
+nodeSelector: {}
+  # networklogging: enabled
+
+service:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: exporter
+      port: 9198
+      protocol: TCP
+      targetPort: 9198
+    # - name: exporter
+    #   port: 9198
+    #   protocol: TCP
+    #   targetPort: 9198
+
+
+    # input {
+    #   beats {
+    #     port => 5044
+    #     interval => 30
+    #   }
+    # }
+    # xpack.monitoring.enabled: false # version logstash8.9.0 opensearch not plugin 
+    # pipeline.ecs_compatibility: disabled
+

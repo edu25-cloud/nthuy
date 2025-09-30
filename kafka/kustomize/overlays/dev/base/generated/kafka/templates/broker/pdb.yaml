@@ -1,0 +1,38 @@
+---
+# Source: kafka/templates/broker/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+<<<<<<< HEAD
+  name: logging-kafka-broker
+  namespace: "netwok-logging"
+  labels:
+    app.kubernetes.io/instance: logging
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 3.8.0
+    helm.sh/chart: kafka-30.0.4
+=======
+  name: kafka-broker
+  namespace: "kafka"
+  labels:
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.0
+>>>>>>> 7a89ac21ee96cffaa294dbdb1fa9c3742ce92446
+    app.kubernetes.io/component: broker
+    app.kubernetes.io/part-of: kafka
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+<<<<<<< HEAD
+      app.kubernetes.io/instance: logging
+=======
+      app.kubernetes.io/instance: kafka
+>>>>>>> 7a89ac21ee96cffaa294dbdb1fa9c3742ce92446
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/component: broker
+      app.kubernetes.io/part-of: kafka

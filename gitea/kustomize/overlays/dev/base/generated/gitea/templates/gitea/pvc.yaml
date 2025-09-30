@@ -1,0 +1,20 @@
+---
+# Source: gitea/templates/gitea/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gitea-shared-storage
+  namespace: gitea
+  annotations:
+    helm.sh/resource-policy: keep
+  labels:
+    {}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  
+  storageClassName: "nfs-delete"
+  resources:
+    requests:
+      storage: 5Gi

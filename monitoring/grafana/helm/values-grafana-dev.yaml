@@ -1,0 +1,83 @@
+global:
+  imageRegistry: null
+  imagePullSecrets: []
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+  automountServiceAccountToken: false
+
+replicas: 1
+
+automountServiceAccountToken: true
+
+image:
+  registry: docker.io
+  repository: grafana/grafana
+  tag: ""
+  pullPolicy: IfNotPresent
+
+testFramework:
+  enabled: true
+  ## The type of Helm hook used to run this test. Defaults to test.
+  ## ref: https://helm.sh/docs/topics/charts_hooks/#the-available-hooks
+  ##
+  # hookType: test
+  image:
+    # -- The Docker registry
+    registry: docker.io
+    repository: bats/bats
+    tag: "v1.4.1"
+  imagePullPolicy: IfNotPresent
+  securityContext: {}
+  containerSecurityContext: {}
+  resources: {}
+
+createConfigmap: true
+
+downloadDashboardsImage:
+  registry: docker.io
+  repository: curlimages/curl
+  tag: 8.9.1
+  sha: ""
+  pullPolicy: IfNotPresent
+
+
+service:
+  enabled: true
+  type: ClusterIP
+
+ingress:
+  enabled: false
+  path: /
+  pathType: Prefix
+  hosts:
+    - chart-example.local
+
+
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+nodeSelector: {}
+
+initChownData:
+
+  enabled: true
+  image:
+    # -- The Docker registry
+    registry: docker.io
+    repository: library/busybox
+    tag: "1.31.1"
+    sha: ""
+    pullPolicy: IfNotPresent
+
+
+adminUser: admin
+adminPassword: strongpassword
+
+
+assertNoLeakedSecrets: true

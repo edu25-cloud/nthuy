@@ -1,0 +1,33 @@
+---
+# Source: kafka/templates/controller-eligible/networkpolicy.yaml
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: kafka-controller
+  namespace: "kafka"
+  labels:
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.0
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: kafka
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: kafka
+      app.kubernetes.io/name: kafka
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/part-of: kafka
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - {}
+  ingress:
+    # Allow client connections
+    - ports:
+        - port: 9093
+        - port: 9092
+        - port: 9094

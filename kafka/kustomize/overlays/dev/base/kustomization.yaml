@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- generated/kafka/templates/broker/pdb.yaml
+- generated/kafka/templates/controller-eligible/configmap.yaml
+- generated/kafka/templates/controller-eligible/pdb.yaml
+- generated/kafka/templates/controller-eligible/statefulset.yaml
+- generated/kafka/templates/controller-eligible/svc-headless.yaml
+- generated/kafka/templates/metrics/jmx-configmap.yaml
+- generated/kafka/templates/metrics/jmx-svc.yaml
+- generated/kafka/templates/networkpolicy.yaml
+- generated/kafka/templates/provisioning/job.yaml
+- generated/kafka/templates/provisioning/serviceaccount.yaml
+- generated/kafka/templates/rbac/serviceaccount.yaml
+- generated/kafka/templates/scripts-configmap.yaml
+- generated/kafka/templates/secrets.yaml
+- generated/kafka/templates/svc.yaml

@@ -1,0 +1,22 @@
+---
+# Source: akhq/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: akhq
+  labels:
+    app.kubernetes.io/name: akhq
+    helm.sh/chart: akhq-0.25.1
+    app.kubernetes.io/instance: akhq
+    app.kubernetes.io/managed-by: Helm
+data:
+  application.yml: |
+    akhq:
+      connections:
+        kafka-server:
+          properties:
+            bootstrap.servers: logging-kafka:9092
+            sasl.jass.config: org.apache.kafka.common.security.plain.PlainLoginModule
+              required username="admin" password="kaf123";
+            sasl.mechanism: PLAIN
+            security.protocol: SASL_PLAINTEXT

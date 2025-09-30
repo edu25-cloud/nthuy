@@ -1,0 +1,58 @@
+# imagePullSecrets:
+#   - name: "harbor"  # name secret harbor on k8s
+
+replicas: 2
+
+image:
+  repository: "opensearchproject/opensearch" #harbor.trhuy.com/demo/opensearch
+  tag: "2.16.0"
+  pullPolicy: "IfNotPresent"
+
+extraEnvs:
+  - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+    value: Opensearch#321
+
+labels:
+  app: network-logging-opensearch
+
+opensearchJavaOpts: "-Xmx512m -Xms512m"
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "256Mi"
+
+
+persistence:
+  enabled: true
+  image: "busybox" #harbor.trhuy.com/demo/busybox
+  imageTag: "1.37"
+  labels:
+    enabled: false
+  storageClass: "nfs-delete"
+  accessModes:
+    - ReadWriteOnce
+  size: 1Gi
+
+nodeSelector: {}
+  # network-logging: enabled
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+  postStart:
+    exec:
+      command:
+        - bash
+        - -c
+        - |
+          #!/bin/bash
+          # Add a template to adjust number of shards/replicas1
+          ES_USERNAME=admin
+          ES_PASSWORD=Opensearch#321
+          ES_URL=https://localhost:9200
+          while [[ "$(curl -s -o /dev/null -w '%{http_code}\n' -k -u $ES_USERNAME:$ES_PASSWORD $ES_URL)" != "200" ]]; do sleep 1; done
+          curl -XPUT -k -u $ES_USERNAME:$ES_PASSWORD "$ES_URL/_index_template/sglog-template" -H 'Content-Type: application/json' -d'{"index_patterns":["sglog-"], "template":{"settings":{"number_of_shards": 1,"number_of_replicas":1}}}'
+          curl -XPUT -k -u $ES_USERNAME:$ES_PASSWORD "$ES_URL/_plugins/_ism/policies/sglog-policy" -H 'Content-Type: application/json' -d'{"policy":{"description": "","default_state": "hot","states":[{"name": "hot","actions": [{"rollover":{"min_index_age": "1d","min_size": "1gb"}}], "transitions": [{"state_name": "delete","conditions": {"min_index_age": "2d"}}]},{"name": "delete", "actions": [{"delete": {}}],"transitions": []}],"ism_template": [{"index_patterns": ["sglog-"],"priority": 1}]}}'
+          

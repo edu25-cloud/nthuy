@@ -1,0 +1,67 @@
+---
+# Source: akhq/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: akhq
+  labels:
+    app.kubernetes.io/name: akhq
+    helm.sh/chart: akhq-0.25.1
+    app.kubernetes.io/instance: akhq
+    app.kubernetes.io/managed-by: Helm
+spec:
+  revisionHistoryLimit: 10
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: akhq
+      app.kubernetes.io/instance: akhq
+  template:
+    metadata:
+      annotations:
+        checksum/config: 232083c06effbe517e88aa918e8c622e09a8cafe48ef5097733c7067a0c25e85
+      labels:
+        app.kubernetes.io/name: akhq
+        app.kubernetes.io/instance: akhq
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: akhq
+          image: "tchiotludo/akhq:0.25.1"
+          imagePullPolicy: Always
+          env:
+          volumeMounts:
+            - name: config
+              mountPath: /app/application.yml
+              subPath: application.yml
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: management
+              containerPort: 28081
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: management
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: management
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            {}
+      volumes:
+      - name: config
+        configMap:
+          name: akhq

@@ -1,0 +1,115 @@
+global:
+  imageRegistry: ""
+  imagePullSecrets: []
+  storageClass: "nfs-delete"
+
+namespace: "gitea"
+
+replicaCount: 1
+image:
+  registry: "docker.gitea.com"
+  repository: gitea
+  tag: ""
+  digest: ""
+  pullPolicy: IfNotPresent
+  rootless: true
+  fullOverride: ""
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: git.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - git.example.com
+
+
+persistence:
+  enabled: true
+  create: true
+  mount: true
+  claimName: gitea-shared-storage
+  size: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  labels: {}
+  storageClass: nfs-delete
+  subPath:
+  volumeName: ""
+  annotations:
+    helm.sh/resource-policy: keep
+
+
+gitea:
+  admin:
+    existingSecret:
+    username: gitea_admin
+    password: r8sA8CPHD9!bt6d
+    email: "gitea@local.domain"
+    passwordMode: keepUpdated
+
+
+redis-cluster:
+  enabled: false
+  usePassword: false
+  cluster:
+    nodes: 3 # default: 6
+    replicas: 0 # default: 1
+
+redis:
+  enabled: true
+  architecture: standalone
+  global:
+    redis:
+      password: changeme
+  master:
+    count: 1
+
+
+postgresql-ha:
+  global:
+    postgresql:
+      database: gitea
+      password: gitea
+      username: gitea
+  enabled: false
+  postgresql:
+    repmgrPassword: changeme2
+    postgresPassword: changeme1
+    password: changeme4
+  pgpool:
+    adminPassword: changeme3
+  service:
+    ports:
+      postgresql: 5432
+  persistence:
+    size: 5Gi
+
+
+postgresql:
+  enabled: true
+  global:
+    postgresql:
+      auth:
+        password: gitea
+        database: gitea
+        username: gitea
+      service:
+        ports:
+          postgresql: 5432
+  primary:
+    persistence:
+      size: 5Gi
+
+checkDeprecation: true
+test:
+  enabled: true
+  image:
+    name: busybox
+    tag: latest
+

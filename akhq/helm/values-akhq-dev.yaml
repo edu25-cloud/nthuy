@@ -1,0 +1,46 @@
+# imagePullSecrets:
+#  - name: my-repository-secret
+image:
+  repository: tchiotludo/akhq
+  tag: "0.25.1" # uses Chart.AppVersion by default
+
+configuration:
+  akhq:
+    connections:
+      kafka-server:
+        properties:
+          bootstrap.servers: "logging-kafka:9092"
+          sasl.jass.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="admin" password="kaf123";
+          sasl.mechanism: PLAIN
+          security.protocol: SASL_PLAINTEXT
+
+ingress:
+  enabled: true
+  ingressClassName: "nginx"
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  labels: {}
+  paths:
+    - /
+  pathType: "Prefix"
+  hosts:
+    - akhq.demo.com
+  tls: []
+  #  - secretName: akhq-tls
+  #    hosts:
+  #      - akhq.demo.com
+
+
+resources: {}
+
+replicaCount: 1
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+networkPolicy:
+  enabled: true
+  labels: {}

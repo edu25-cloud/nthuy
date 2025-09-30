@@ -1,0 +1,45 @@
+---
+# Source: kafka/templates/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+<<<<<<< HEAD
+  name: logging-kafka
+  namespace: "netwok-logging"
+  labels:
+    app.kubernetes.io/instance: logging
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 3.8.0
+    helm.sh/chart: kafka-30.0.4
+=======
+  name: kafka
+  namespace: "kafka"
+  labels:
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/version: 4.0.0
+    helm.sh/chart: kafka-32.2.0
+>>>>>>> 7a89ac21ee96cffaa294dbdb1fa9c3742ce92446
+    app.kubernetes.io/component: kafka
+spec:
+  type: ClusterIP
+  sessionAffinity: None
+  ports:
+    - name: tcp-client
+      port: 9092
+      protocol: TCP
+      targetPort: client
+      nodePort: null
+  selector:
+<<<<<<< HEAD
+    app.kubernetes.io/instance: logging
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/part-of: kafka
+    app.kubernetes.io/component: broker
+=======
+    app.kubernetes.io/instance: kafka
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/part-of: kafka
+>>>>>>> 7a89ac21ee96cffaa294dbdb1fa9c3742ce92446
